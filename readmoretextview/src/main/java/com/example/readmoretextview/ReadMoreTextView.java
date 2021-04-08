@@ -140,7 +140,7 @@ public class ReadMoreTextView {
         if (str.contains(spanableText)) {
 
 
-            ssb.setSpan(new ReadMoreSpan(false, colorCode) {
+            ssb.setSpan(new ReadMoreSpan(true, colorCode) {
                 @Override
                 public void onClick(View widget) {
                     if (viewMore) {
