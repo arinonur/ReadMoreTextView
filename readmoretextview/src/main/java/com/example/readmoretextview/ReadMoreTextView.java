@@ -1,5 +1,6 @@
 package com.example.readmoretextview;
 
+import android.support.annotation.Nullable;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -7,6 +8,7 @@ import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
@@ -24,17 +26,18 @@ public class ReadMoreTextView {
 
 
     private TextView textView;
+    private ImageView imageView;
 
     public ReadMoreTextView() {
 
     }
 
-    public ReadMoreTextView(TextView tv, int maxLine, String expandText, String collapseText, String readMoreColorCode) {
+    public ReadMoreTextView(TextView tv, ImageView iv, int maxLine, String expandText, String collapseText, String readMoreColorCode, boolean isReaded) {
         this.expandText = expandText;
         this.collapseText = collapseText;
         this.collapseSize = maxLine;
         this.colorCode = readMoreColorCode;
-        makeTextViewResizable(tv, maxLine, expandText, true);
+        makeTextViewResizable(tv, iv, maxLine, expandText, true);
     }
 
 
@@ -79,16 +82,23 @@ public class ReadMoreTextView {
         this.textView = textView;
     }
 
+    public ImageView getImageView() {
+        return imageView;
+    }
+
+    public void setImageView(ImageView imageView) {
+        this.imageView = imageView;
+    }
+
     public void setReadMore() {
         if (textView == null) {
             Log.e(TAG, "Textview must not be null");
             return;
         }
-        makeTextViewResizable(textView, maximumLine, expandText, true);
+        makeTextViewResizable(textView, imageView,maximumLine, expandText, true);
     }
 
-
-    public void makeTextViewResizable(final TextView tv, final int maxLine, final String expandText, final boolean readMore) {
+    public void makeTextViewResizable(final TextView tv, @Nullable final ImageView iv, final int maxLine, final String expandText, final boolean readMore) {
 
         if (tv.getTag() == null) {
             tv.setTag(tv.getText());
@@ -108,7 +118,7 @@ public class ReadMoreTextView {
                     tv.setText(text);
                     tv.setMovementMethod(LinkMovementMethod.getInstance());
                     tv.setText(
-                            addClickablePartTextViewResizable(Html.fromHtml(tv.getText().toString().replace("\n", "<br>")), tv, maxLine, expandText,
+                            addClickablePartTextViewResizable(Html.fromHtml(tv.getText().toString().replace("\n", "<br>")),  tv,iv, maxLine, expandText,
                                     readMore), TextView.BufferType.SPANNABLE);
                 } else if (maxLine > 0 && tv.getLineCount() >= maxLine) {
                     int lineEndIndex = tv.getLayout().getLineEnd(maxLine - 1);
@@ -116,7 +126,7 @@ public class ReadMoreTextView {
                     tv.setText(text);
                     tv.setMovementMethod(LinkMovementMethod.getInstance());
                     tv.setText(
-                            addClickablePartTextViewResizable(Html.fromHtml(tv.getText().toString().replace("\n", "<br>")), tv, maxLine, expandText,
+                            addClickablePartTextViewResizable(Html.fromHtml(tv.getText().toString().replace("\n", "<br>")), tv,iv, maxLine, expandText,
                                     readMore), TextView.BufferType.SPANNABLE);
                 } else {
                     int lineEndIndex = tv.getLayout().getLineEnd(tv.getLayout().getLineCount() - 1);
@@ -124,7 +134,7 @@ public class ReadMoreTextView {
                     tv.setText(text);
                     tv.setMovementMethod(LinkMovementMethod.getInstance());
                     tv.setText(
-                            addClickablePartTextViewResizable(Html.fromHtml(tv.getText().toString().replace("\n", "<br>")), tv, lineEndIndex, expandText,
+                            addClickablePartTextViewResizable(Html.fromHtml(tv.getText().toString().replace("\n", "<br>")), tv,iv, lineEndIndex, expandText,
                                     readMore), TextView.BufferType.SPANNABLE);
                 }
             }
@@ -132,7 +142,7 @@ public class ReadMoreTextView {
 
     }
 
-    private SpannableStringBuilder addClickablePartTextViewResizable(final Spanned strSpanned, final TextView tv,
+    private SpannableStringBuilder addClickablePartTextViewResizable(final Spanned strSpanned, final TextView tv, final ImageView iv,
                                                                      final int maxLine, final String spanableText, final boolean viewMore) {
         String str = strSpanned.toString();
         SpannableStringBuilder ssb = new SpannableStringBuilder(strSpanned);
@@ -146,14 +156,19 @@ public class ReadMoreTextView {
                     if (viewMore) {
                         tv.setLayoutParams(tv.getLayoutParams());
                         tv.setText(tv.getTag().toString(), TextView.BufferType.SPANNABLE);
+                        iv.setImageResource(R.drawable.oval_green);
                         tv.invalidate();
-                        makeTextViewResizable(tv, -1, collapseText, false);
+                        iv.invalidate();
+                        makeTextViewResizable(tv,iv, -1, collapseText, false);
                     } else {
                         tv.setLayoutParams(tv.getLayoutParams());
+                        iv.setLayoutParams(tv.getLayoutParams());
                         tv.setText(tv.getTag().toString(), TextView.BufferType.SPANNABLE);
+                        iv.setImageResource(R.drawable.oval_now);
                         tv.invalidate();
+                        iv.invalidate();
                         // makeTextViewResizable(tv, 3,expandText, true);
-                        makeTextViewResizable(tv, collapseSize, expandText, true);
+                        makeTextViewResizable(tv,iv, collapseSize, expandText, true);
                     }
                 }
             }, str.indexOf(spanableText), str.indexOf(spanableText) + spanableText.length(), 0);
