@@ -164,7 +164,7 @@ public class ReadMoreTextView {
                         tv.setLayoutParams(tv.getLayoutParams());
                         iv.setLayoutParams(tv.getLayoutParams());
                         tv.setText(tv.getTag().toString(), TextView.BufferType.SPANNABLE);
-                        iv.setImageResource(R.drawable.oval_now);
+                        iv.setImageResource(R.drawable.oval_timeline_grey);
                         tv.invalidate();
                         iv.invalidate();
                         // makeTextViewResizable(tv, 3,expandText, true);
